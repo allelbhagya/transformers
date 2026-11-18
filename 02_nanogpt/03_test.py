@@ -7,6 +7,7 @@ generation: sample new text token one at a time
 """
 
 from dataclasses import dataclass
+from datasets import load_dataset
 
 import torch
 import torch.nn as nn
@@ -15,21 +16,21 @@ from torch.nn import functional as F
 @dataclass
 class Config:
     # training
-    batch_size: int = 16        # sequences processed in parallel
+    batch_size: int = 32        # sequences processed in parallel
     max_iters: int = 2000
     eval_interval: int = 100
     eval_iters: int = 200
     learning_rate: float = 1e-3
 
     # model
-    block_size: int = 32        # max context length
-    n_embd: int = 64            # width of the model
+    block_size: int = 128        # max context length
+    n_embd: int = 256            # width of the model
     n_head: int = 4             # attention heads
     n_layer: int = 4            # number of Blocks stacked
-    dropout: float = 0.0
+    dropout: float = 0.01
 
     # misc
-    data_path: str = "../0_data/input.txt"
+    data_path: str = "../01_data/oz.parquet"
     seed: int = 1337
     device: str = "mps"
     vocab_size: int = 0 
@@ -49,10 +50,15 @@ class CharTokenizer:
         return "".join(self.itos[i] for i in ids)
 
 def load_data(cfg):
-    with open(cfg.data_path, "r", encoding="utf-8") as f:
-        text = f.read()
+
+    dataset = load_dataset("parquet",data_files=cfg.data_path, split="train")
+
+    text = "\n\n".join(dataset["text"])
     tokenizer = CharTokenizer(text)
-    data = torch.tensor(tokenizer.encode(text), dtype=torch.long)
+    data = torch.tensor(
+        tokenizer.encode(text),
+        dtype=torch.long
+    )
     n = int(0.9 * len(data))
     return tokenizer, data[:n], data[n:]
 
