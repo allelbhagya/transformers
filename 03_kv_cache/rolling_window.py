@@ -17,15 +17,15 @@ class Config:
 
     # model
     block_size: int = 128
-    n_embd: int = 256
+    n_embd: int = 128
     n_head: int = 4
     n_layer: int = 4
     dropout: float = 0.01
 
     # extra
-    data_path: str = "../01_data/data.parquet"
+    data_path: str = "tiny.parquet"
     seed: int = 1337
-    device: str = "mps"
+    device: str = "cpu"
     vocab_size: int = 0
 
 class CharTokenizer:
