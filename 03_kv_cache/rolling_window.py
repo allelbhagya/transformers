@@ -88,6 +88,8 @@ class CausalSelfAttention(nn.Module):
         new_kv = (k, v)
 
         att = (q @ k.transpose(-2, -1)) * self.head_size ** -0.5
+
+        # when first call, past_kv is None
         if past_kv is None:
             att = att.masked_fill(self.tril[:T, :T] == 0, float("-inf"))
 
