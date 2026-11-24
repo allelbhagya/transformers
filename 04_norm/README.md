@@ -1,0 +1,3 @@
+- replace layer norm with RMSNorm
+- GELU → SwiGLU
+- Learned positions → RoPE
